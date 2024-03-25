@@ -24,7 +24,7 @@ Test the C Program for the desired output.
 # PROGRAM:
 
 ## C Program to print process ID and parent Process ID using Linux API system calls
-
+```
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -42,7 +42,7 @@ int main(void)
 	printf("The process id of parent function: %d\n",p_process_id);
 	return 0; 
  }
-
+```
 $ gcc -o pid.o pid.c
  ./pid.o
 ## OUTPUT
@@ -86,7 +86,7 @@ PID   USER     TIME  COMMAND
    98 root      0:00 ps
 ```
 ## C Program to create new process using Linux API system calls fork() and exit()
-
+```
 #include <stdio.h>
 #include<stdlib.h>
 int main()
@@ -105,7 +105,7 @@ sleep(100);
 exit(0);
 } 
 }
-
+```
 $ gcc -o fork.o fork.c
 ./fork.o
 ## OUTPUT:
