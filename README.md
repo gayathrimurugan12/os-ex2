@@ -43,8 +43,10 @@ int main(void)
 	return 0; 
  }
 ```
+```
 $ gcc -o pid.o pid.c
  ./pid.o
+```
 ## OUTPUT
 ```
 The process id: 97
@@ -106,8 +108,10 @@ exit(0);
 } 
 }
 ```
+```
 $ gcc -o fork.o fork.c
 ./fork.o
+```
 ## OUTPUT:
 ```
 I am parent, my pid is 130
