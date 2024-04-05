@@ -24,7 +24,7 @@ Test the C Program for the desired output.
 # PROGRAM:
 
 ## C Program to print process ID and parent Process ID using Linux API system calls
-```
+```c
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -37,157 +37,81 @@ int main(void)
 	process_id = getpid();
 	//getppid() - will return process id of parent function
 	p_process_id = getppid();
-	//printing the process ids
-  printf("The process id: %d\n",process_id);
+	printf("The process id: %d\n",process_id);
 	printf("The process id of parent function: %d\n",p_process_id);
-	return 0; 
- }
-```
-```
-$ gcc -o pid.o pid.c
- ./pid.o
+	return 0; }
 ```
 ## OUTPUT
-```
-The process id: 97
-The process id of parent function: 62
-```
-$ ps
-```
-PID   USER     TIME  COMMAND
-    1 root      0:01 {init} /bin/sh /sbin/init
-    2 root      0:00 [kthreadd]
-    3 root      0:00 [kworker/0:0]
-    4 root      0:00 [kworker/0:0H]
-    5 root      0:00 [kworker/u2:0]
-    6 root      0:00 [mm_percpu_wq]
-    7 root      0:00 [ksoftirqd/0]
-    8 root      0:00 [kdevtmpfs]
-    9 root      0:00 [oom_reaper]
-   10 root      0:00 [writeback]
-   11 root      0:00 [kcompactd0]
-   12 root      0:00 [crypto]
-   13 root      0:00 [bioset]
-   14 root      0:00 [kblockd]
-   15 root      0:00 [kworker/0:1]
-   16 root      0:00 [kswapd0]
-   17 root      0:00 [bioset]
-   34 root      0:00 [khvcd]
-   35 root      0:00 [bioset]
-   36 root      0:00 [bioset]
-   37 root      0:00 [bioset]
-   38 root      0:00 [bioset]
-   39 root      0:00 [bioset]
-   40 root      0:00 [bioset]
-   41 root      0:00 [bioset]
-   42 root      0:00 [bioset]
-   43 root      0:00 [kworker/u2:1]
-   56 root      0:00 settime -d /
-   57 root      0:00 dhcpcd -q
-   62 root      0:00 sh -l
-   98 root      0:00 ps
-```
+
+![ID and Parrent](https://github.com/Aakashraj04/Linux-Process-API-fork-wait-exec-/assets/121117266/c4b360a5-d4f2-4290-914f-64f17f16c105)
+
+
+
 ## C Program to create new process using Linux API system calls fork() and exit()
-```
+```c
 #include <stdio.h>
-#include<stdlib.h>
-int main()
-{ 
-int pid; 
-pid=fork(); 
-if(pid == 0) 
-{ 
-printf("Iam child my pid is %d\n",getpid()); 
-printf("My parent pid is:%d\n",getppid()); 
-exit(0); 
-} 
-else{ 
-printf("I am parent, my pid is %d\n",getpid()); 
-sleep(100); 
-exit(0);
-} 
+#include <stdlib.h>
+#include <unistd.h>
+int main() {
+    int pid;
+    pid = fork();
+    if (pid == -1) {
+        perror("fork");
+        exit(EXIT_FAILURE);
+    }
+    else if (pid == 0) {
+        printf("I am child, my pid is %d\n", getpid());
+        printf("My parent pid is: %d\n", getppid());
+        exit(EXIT_SUCCESS);
+    }
+    else {
+        printf("I am parent, my pid is %d\n", getpid());
+        sleep(100);
+        exit(EXIT_SUCCESS);
+    }
+    return 0;
 }
-```
-```
-$ gcc -o fork.o fork.c
-./fork.o
-```
-## OUTPUT:
-```
-I am parent, my pid is 130
-Iam child my pid is 131
-My parent pid is:130
-```
-## C Program to execute Linux system commands using Linux API system calls exec() family
 
 ```
+## OUTPUT
+
+![fort and exit](https://github.com/Aakashraj04/Linux-Process-API-fork-wait-exec-/assets/121117266/e3f3cb94-05c3-4e20-abe3-8d9d67826265)
+
+
+
+## C Program to execute Linux system commands using Linux API system calls exec() family
+```c
 #include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
-#include <sys/wait.h>
 #include <sys/types.h>
-int main()
-{
+#include <sys/wait.h>
+#include <unistd.h>
+int main() {
+    pid_t pid = fork();
+    if (pid < 0) {
+        perror("Fork failed");
+        exit(EXIT_FAILURE);
+    } else if (pid == 0) {
+        printf("This is the child process. Executing 'ls' command.\n");
+        execl("/bin/ls", "ls", "-l", NULL); // Lists files in long format
+        perror("execl failed");
+        exit(EXIT_FAILURE);
+    } else {
         int status;
-        printf("Running ps with execlp\n");
-        execl("ps", "ps", "ax", NULL);
-        wait(&status);
-        if (WIFEXITED(status))
-                printf("child exited with status of %d\n", WEXITSTATUS(status));
-        else
-                printf("child did not exit successfully\n");
-                printf("Done.\n");
-                printf("Running ps with execlp. Now with path specified\n");
-                execlp("/bin/ps", "ps", "ax", NULL);
-        wait(&status);
-        if (WIFEXITED(status))
-                printf("child exited with status of %d\n", WEXITSTATUS(status));
-        else
-                printf("child did not exit successfully\n");
-        printf("Done.\n");
-        exit(0);
+        waitpid(pid, &status, 0); // Wait for the child to finish
+        if (WIFEXITED(status)) {
+            printf("Child process exited with status %d.\n", WEXITSTATUS(status));
+        } else {
+            printf("Child process did not exit normally.\n");
+        }
+        printf("Parent process is done.\n");
+    }
+    return 0;
 }
 ```
-```
-$ gcc -o exec.o exec.c
-$ ./exec.o
-```
 ## OUTPUT
-```
-Running ps with execlp
-PID   USER     TIME  COMMAND
-    1 root      0:01 {init} /bin/sh /sbin/init
-    2 root      0:00 [kthreadd]
-    3 root      0:00 [kworker/0:0]
-    4 root      0:00 [kworker/0:0H]
-    5 root      0:00 [kworker/u2:0]
-    6 root      0:00 [mm_percpu_wq]
-    7 root      0:00 [ksoftirqd/0]
-    8 root      0:00 [kdevtmpfs]
-    9 root      0:00 [oom_reaper]
-   10 root      0:00 [writeback]
-   11 root      0:00 [kcompactd0]
-   12 root      0:00 [crypto]
-   13 root      0:00 [bioset]
-   14 root      0:00 [kblockd]
-   15 root      0:00 [kworker/0:1]
-   16 root      0:00 [kswapd0]
-   17 root      0:00 [bioset]
-   34 root      0:00 [khvcd]
-   35 root      0:00 [bioset]
-   36 root      0:00 [bioset]
-   37 root      0:00 [bioset]
-   38 root      0:00 [bioset]
-   39 root      0:00 [bioset]
-   40 root      0:00 [bioset]
-   41 root      0:00 [bioset]
-   42 root      0:00 [bioset]
-   55 root      0:00 settime -d /
-   56 root      0:00 dhcpcd -q
-   61 root      0:00 sh -l
-   62 root      0:00 [kworker/u2:1]
-  192 root      0:00 ps ax
-```
+![exec](https://github.com/Aakashraj04/Linux-Process-API-fork-wait-exec-/assets/121117266/33a2ae89-7e9d-478e-b9ad-1b6d4363d1ce)
+
 
 # RESULT:
 The programs are executed successfully.
